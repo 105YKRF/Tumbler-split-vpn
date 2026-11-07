@@ -1,0 +1,48 @@
+<Window x:Class="Tumbler.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Настройки" Width="470" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False"
+        Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13.5" UseLayoutRounding="True">
+    <StackPanel Margin="22,20,22,18">
+
+        <TextBlock Text="КОГДА VPN НЕДОСТУПЕН" Style="{StaticResource SectionTitle}"/>
+        <RadioButton x:Name="BlockRadio" GroupName="Fallback" Click="Fallback_Click">
+            <StackPanel>
+                <TextBlock Text="Оставлять выбранные приложения без сети"/>
+                <TextBlock Text="Ничего не уйдёт мимо VPN, но приложения не работают, пока он не вернётся." Style="{StaticResource Note}" Margin="0,2,0,0"/>
+            </StackPanel>
+        </RadioButton>
+        <RadioButton x:Name="DirectRadio" GroupName="Fallback" Click="Fallback_Click" Margin="0,12,0,0">
+            <StackPanel>
+                <TextBlock Text="Временно пускать напрямую"/>
+                <TextBlock Text="Приложения продолжают работать без VPN и возвращаются в него сами, когда порт оживёт. Работает, пока «Тумблер» запущен, хотя бы в трее."
+                           Style="{StaticResource Note}" Margin="0,2,0,0"/>
+            </StackPanel>
+        </RadioButton>
+
+        <TextBlock Text="ОКНО И ЗАПУСК" Style="{StaticResource SectionTitle}" Margin="0,24,0,10"/>
+        <CheckBox x:Name="CloseToTrayBox" Content="Крестик сворачивает в трей, а не закрывает" Click="CloseToTray_Click"/>
+        <CheckBox x:Name="AutostartBox" Content="Запускать вместе с Windows (сразу в трее)" Click="Autostart_Click" Margin="0,12,0,0"/>
+        <TextBlock x:Name="AutostartNote" Style="{StaticResource Note}" Margin="24,4,0,0" Visibility="Collapsed"/>
+
+        <TextBlock Text="ГОРЯЧАЯ КЛАВИША ПАУЗЫ" Style="{StaticResource SectionTitle}" Margin="0,24,0,10"/>
+        <StackPanel Orientation="Horizontal">
+            <TextBox x:Name="HotkeyBox" Width="170" IsReadOnly="True" PreviewKeyDown="Hotkey_PreviewKeyDown"
+                     ToolTip="Щёлкни в поле и нажми сочетание клавиш с Ctrl, Alt или Shift"/>
+            <Button Content="Отключить" Click="HotkeyOff_Click" Margin="8,0,0,0"/>
+        </StackPanel>
+        <TextBlock x:Name="HotkeyNote" Style="{StaticResource Note}" Margin="0,6,0,0"
+                   Text="Ставит всё на паузу и снимает с неё из любой программы."/>
+
+        <TextBlock Text="О ПРОГРАММЕ" Style="{StaticResource SectionTitle}" Margin="0,24,0,10"/>
+        <TextBlock x:Name="AboutText" Style="{StaticResource Note}"/>
+
+        <DockPanel Margin="0,22,0,0">
+            <Button DockPanel.Dock="Right" Content="Закрыть" IsCancel="True" IsDefault="True" MinWidth="92" Click="Close_Click"/>
+            <Button x:Name="UninstallButton" Content="Удалить компоненты…" HorizontalAlignment="Left" Click="Uninstall_Click"
+                    ToolTip="Убрать с компьютера службу ProxiFyre, её файлы, правило брандмауэра и, по желанию, драйвер"/>
+        </DockPanel>
+    </StackPanel>
+</Window>

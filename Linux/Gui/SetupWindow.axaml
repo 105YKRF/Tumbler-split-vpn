@@ -1,0 +1,52 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gui="using:Tumbler.Gui"
+        xmlns:daemon="using:Tumbler.Daemon"
+        x:Class="Tumbler.Gui.SetupWindow"
+        Title="Тумблер — установка" Width="580" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterScreen">
+    <StackPanel Margin="24,22,24,18">
+        <TextBlock x:Name="Headline" Classes="headline" Text="Нужно кое-что установить"/>
+        <TextBlock x:Name="Intro" Classes="muted" TextWrapping="Wrap" Margin="0,8,0,16"
+                   Text="«Тумблер» пускает через твой VPN только выбранные приложения, а остальные оставляет напрямую. Для этого в системе один раз ставится служба. Сначала проверим, всё ли для неё есть:"/>
+
+        <ItemsControl x:Name="Items">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="daemon:Requirement">
+                    <Border Classes="card" Margin="0,0,0,8">
+                        <Grid ColumnDefinitions="28,*">
+                            <Panel Margin="0,2,0,0" VerticalAlignment="Top">
+                                <PathIcon Data="{StaticResource IconCheck}" Width="15" Height="15" Foreground="{StaticResource Accent}" IsVisible="{Binding Ok}"/>
+                                <PathIcon Data="{StaticResource IconClose}" Width="15" Height="15" Foreground="{StaticResource Danger}" IsVisible="{Binding !Ok}"/>
+                            </Panel>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding Detail}" Classes="note" Margin="0,3,0,0"/>
+                                <SelectableTextBlock Text="{Binding Fix}" FontFamily="monospace" FontSize="12" TextWrapping="Wrap" Margin="0,6,0,0"
+                                                     IsVisible="{Binding !Ok}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <Border Classes="card" Margin="0,4,0,0">
+            <StackPanel>
+                <TextBlock Text="ЧТО БУДЕТ УСТАНОВЛЕНО" Classes="section" Margin="0,0,0,8"/>
+                <TextBlock Classes="note" FontSize="13" Text="• «Тумблер» — в /opt/tumbler, с ярлыком в меню приложений."/>
+                <TextBlock Classes="note" FontSize="13" Margin="0,4,0,0" Text="• Служба systemd «tumbler»: переносит процессы выбранных приложений в отдельную cgroup и направляет их трафик в VPN-клиент через nftables и маршруты."/>
+                <TextBlock Classes="note" FontSize="13" Margin="0,4,0,0" Text="• hev-socks5-tunnel 2.18.0 (лицензия MIT, github.com/heiher/hev-socks5-tunnel) — переводит этот трафик в SOCKS5."/>
+                <TextBlock Classes="note" Margin="0,8,0,0" Text="Понадобится пароль администратора. Всё удаляется кнопкой в настройках «Тумблера»."/>
+            </StackPanel>
+        </Border>
+
+        <TextBlock x:Name="Status" TextWrapping="Wrap" Margin="0,14,0,0" IsVisible="False"/>
+        <SelectableTextBlock x:Name="ManualCommand" FontFamily="monospace" FontSize="12" TextWrapping="Wrap" Margin="0,8,0,0" IsVisible="False"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Spacing="8" Margin="0,18,0,0">
+            <Button x:Name="ExitButton" Content="Выход" MinWidth="92" Click="Exit_Click"/>
+            <Button x:Name="InstallButton" Classes="accent" Content="Установить" MinWidth="132" Click="Install_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

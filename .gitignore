@@ -1,0 +1,19 @@
+# Сборка
+bin/
+obj/
+Linux/bin/
+Linux/obj/
+Linux/publish-linux/
+dist/
+
+# Готовые архивы — публикуются в Releases, а не в репозитории
+*.rar
+*.tar.gz
+
+# Распакованная копия ProxiFyre: в сборку встраивается архив Payload/ProxiFyre-x64.zip
+Payload/ProxiFyre-x64/
+
+# IDE
+.vs/
+.idea/
+*.user

@@ -1,0 +1,161 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:gui="using:Tumbler.Gui"
+        xmlns:tumbler="using:Tumbler"
+        x:Class="Tumbler.Gui.MainWindow"
+        Title="Тумблер" Width="740" Height="820" MinWidth="640" MinHeight="480"
+        WindowStartupLocation="CenterScreen">
+    <Grid Margin="18,16,18,12" RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+        <!-- Шапка: общий выключатель, состояние и порт -->
+        <Border Classes="panel" Padding="18,16">
+            <Grid ColumnDefinitions="Auto,*,Auto">
+                <ToggleSwitch x:Name="MasterSwitch" OnContent="" OffContent="" VerticalAlignment="Center"
+                              IsCheckedChanged="Master_Changed"
+                              ToolTip.Tip="Общий выключатель: на паузе все приложения идут напрямую, список сохраняется"/>
+
+                <StackPanel Grid.Column="1" Margin="12,0,16,0" VerticalAlignment="Center">
+                    <TextBlock x:Name="MasterTitle" Classes="title" Text="Проксирование включено"/>
+                    <DockPanel Margin="0,6,0,0">
+                        <Ellipse x:Name="StatusDot" Classes="dot" DockPanel.Dock="Left" Margin="0,5,8,0"
+                                 VerticalAlignment="Top" Fill="{StaticResource Muted}"/>
+                        <TextBlock x:Name="StatusText" Classes="muted" FontSize="12.5" TextWrapping="Wrap" Text="Связываюсь со службой…"/>
+                    </DockPanel>
+                </StackPanel>
+
+                <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                    <TextBlock Text="Порт по умолчанию (SOCKS5)" Classes="muted" FontSize="11.5" Margin="0,0,0,6"/>
+                    <StackPanel Orientation="Horizontal" Spacing="7">
+                        <TextBlock Text="127.0.0.1 :" Classes="muted" VerticalAlignment="Center"/>
+                        <TextBox x:Name="PortBox" Width="76" MaxLength="5" FontWeight="SemiBold"
+                                 TextChanged="Port_TextChanged" KeyDown="Port_KeyDown" LostFocus="Port_LostFocus"
+                                 ToolTip.Tip="Через этот порт идут приложения, которым не назначен свой. Введи порт и нажми Enter."/>
+                        <Ellipse x:Name="PortDot" Classes="dot" Margin="3,0,0,0" VerticalAlignment="Center" Fill="{StaticResource Muted}"
+                                 ToolTip.Tip="Отвечает ли прокси на этом порту"/>
+                    </StackPanel>
+                    <ItemsControl x:Name="Presets" Margin="0,8,0,0">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="6"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate DataType="tumbler:PortPreset">
+                                <Button Classes="chip" Tag="{Binding Port}" ToolTip.Tip="{Binding Hint}" Click="Preset_Click">
+                                    <TextBlock Text="{Binding Label}"/>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Предупреждения -->
+        <ItemsControl x:Name="Banners" Grid.Row="1">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="gui:Banner">
+                    <Border Classes="banner" Classes.error="{Binding IsError}">
+                        <DockPanel>
+                            <Button DockPanel.Dock="Right" Tag="{Binding ActionId}" Click="BannerAction_Click"
+                                    Margin="12,0,0,0" VerticalAlignment="Center" IsVisible="{Binding HasAction}">
+                                <TextBlock Text="{Binding ActionLabel}"/>
+                            </Button>
+                            <PathIcon DockPanel.Dock="Left" Data="{StaticResource IconAlert}" Width="15" Height="15" Margin="0,2,10,0" VerticalAlignment="Top"/>
+                            <TextBlock Text="{Binding Text}" TextWrapping="Wrap" FontSize="12.5" VerticalAlignment="Center"/>
+                        </DockPanel>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <!-- Профиль, поиск и фильтр -->
+        <Grid Grid.Row="2" Margin="0,14,0,0" ColumnDefinitions="Auto,*,Auto,Auto">
+            <Button x:Name="ProfileButton" Click="Profile_Click" Padding="12,7" MaxWidth="210" VerticalAlignment="Stretch"
+                    ToolTip.Tip="Профиль — сохранённый набор тумблеров. Переключение меняет всё разом.">
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                    <PathIcon Data="{StaticResource IconAccount}" Width="14" Height="14" Foreground="{StaticResource Muted}"/>
+                    <TextBlock x:Name="ProfileName" Text="Основной" TextTrimming="CharacterEllipsis" MaxWidth="140" VerticalAlignment="Center"/>
+                    <PathIcon Data="{StaticResource IconChevron}" Width="10" Height="10" Foreground="{StaticResource Muted}"/>
+                </StackPanel>
+            </Button>
+            <TextBox x:Name="SearchBox" Grid.Column="1" Margin="10,0,0,0" Watermark="Поиск приложения" TextChanged="Search_TextChanged">
+                <TextBox.InnerLeftContent>
+                    <PathIcon Data="{StaticResource IconSearch}" Width="14" Height="14" Margin="10,0,0,0" Foreground="{StaticResource Muted}"/>
+                </TextBox.InnerLeftContent>
+            </TextBox>
+            <CheckBox x:Name="ShowAllBox" Grid.Column="2" Content="Все процессы" Margin="14,0,0,0" IsCheckedChanged="ShowAll_Changed"
+                      ToolTip.Tip="Показать и системные процессы, и процессы других пользователей"/>
+            <Button Grid.Column="3" Content="Добавить…" Margin="10,0,0,0" Click="AddApp_Click" VerticalAlignment="Stretch"
+                    ToolTip.Tip="Выбрать программу, которая сейчас не запущена"/>
+        </Grid>
+
+        <!-- Список приложений -->
+        <Panel Grid.Row="3" Margin="0,4,0,0">
+            <ScrollViewer HorizontalScrollBarVisibility="Disabled">
+                <ItemsControl x:Name="AppList">
+                    <ItemsControl.DataTemplates>
+                        <DataTemplate DataType="gui:SectionHeader">
+                            <StackPanel Orientation="Horizontal" Margin="10,14,0,6" Spacing="8">
+                                <TextBlock Text="{Binding Title}" Classes="section"/>
+                                <TextBlock Text="{Binding Count}" Classes="faint" FontSize="11.5"/>
+                            </StackPanel>
+                        </DataTemplate>
+                        <DataTemplate DataType="gui:AppRow">
+                            <Border Classes="row" Height="52" Padding="10,0,6,0">
+                                <Grid ColumnDefinitions="44,*,Auto,Auto,Auto">
+                                    <Panel Width="32" Height="32" HorizontalAlignment="Left" Opacity="{Binding IconOpacity}">
+                                        <Border CornerRadius="8" Background="{StaticResource Line}" IsVisible="{Binding NoIcon}">
+                                            <PathIcon Data="{StaticResource IconApp}" Width="16" Height="16" Foreground="{StaticResource Muted}"/>
+                                        </Border>
+                                        <Image Source="{Binding Icon}"/>
+                                    </Panel>
+
+                                    <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,8,0">
+                                        <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextTrimming="CharacterEllipsis"/>
+                                        <TextBlock Text="{Binding Subtitle}" Classes="muted small" Classes.warn="{Binding Suspended}"
+                                                   Margin="0,2,0,0" TextTrimming="CharacterEllipsis"/>
+                                    </StackPanel>
+
+                                    <Button Grid.Column="2" Classes="icon" Click="Restart_Click" IsVisible="{Binding CanRestart}"
+                                            ToolTip.Tip="Перезапустить приложение. Нужно, если оно уже держит открытые соединения: по новому правилу идут только новые.">
+                                        <PathIcon Data="{StaticResource IconRefresh}" Width="14" Height="14"/>
+                                    </Button>
+
+                                    <Button Grid.Column="3" Classes="chip" Classes.down="{Binding PortDown}" Click="RowPort_Click"
+                                            IsVisible="{Binding IsProxied}" Margin="6,0,0,0" VerticalAlignment="Center"
+                                            ToolTip.Tip="Через какой порт идёт это приложение">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <TextBlock Text="{Binding PortLabel}"/>
+                                            <PathIcon Data="{StaticResource IconChevron}" Width="9" Height="9"/>
+                                        </StackPanel>
+                                    </Button>
+
+                                    <ToggleSwitch Grid.Column="4" IsChecked="{Binding IsProxied}" OnContent="" OffContent=""
+                                                  Margin="10,0,0,0" VerticalAlignment="Center" MinWidth="0"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.DataTemplates>
+                </ItemsControl>
+            </ScrollViewer>
+            <TextBlock x:Name="EmptyHint" Text="Ничего не найдено" Classes="faint" HorizontalAlignment="Center" VerticalAlignment="Center" IsVisible="False"/>
+        </Panel>
+
+        <!-- Подвал -->
+        <Border Grid.Row="4" BorderBrush="{StaticResource Line}" BorderThickness="0,1,0,0" Margin="0,8,0,0" Padding="2,12,0,0">
+            <DockPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="8">
+                    <Button Content="Диагностика" Click="Diagnostics_Click"
+                            ToolTip.Tip="Проверить всю цепочку: службу, туннели, порты и интернет через прокси"/>
+                    <Button Content="Настройки" Click="Settings_Click"/>
+                    <Button Content="Справка" Click="Help_Click"
+                            ToolTip.Tip="Как настроить Karing, v2rayN, NekoBox, Hiddify и другие VPN-клиенты"/>
+                </StackPanel>
+                <CheckBox x:Name="UdpBox" DockPanel.Dock="Left" Content="UDP" IsCheckedChanged="Udp_Changed" VerticalAlignment="Center"
+                          ToolTip.Tip="Проксировать и UDP: голос в Discord, звонки, QUIC. Без галочки через прокси идёт только TCP, а UDP — напрямую."/>
+                <TextBlock x:Name="FooterText" Classes="muted" FontSize="12.5" Margin="18,0,0,0" VerticalAlignment="Center" TextTrimming="CharacterEllipsis"/>
+            </DockPanel>
+        </Border>
+    </Grid>
+</Window>

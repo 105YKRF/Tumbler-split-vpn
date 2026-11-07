@@ -1,0 +1,37 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0-windows</TargetFramework>
+    <UseWPF>true</UseWPF>
+    <UseWindowsForms>true</UseWindowsForms>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>Tumbler</AssemblyName>
+    <RootNamespace>Tumbler</RootNamespace>
+    <Version>1.2.0</Version>
+    <Product>Тумблер</Product>
+    <AssemblyTitle>Тумблер — приложения через VPN</AssemblyTitle>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- DPI задаётся в app.manifest: так нужно WPF, а Windows Forms здесь только ради значка в трее -->
+    <NoWarn>$(NoWarn);WFO0003</NoWarn>
+    <!-- В папке Linux лежит отдельный проект для Linux; общий код — в Shared -->
+    <DefaultItemExcludes>$(DefaultItemExcludes);Linux\**</DefaultItemExcludes>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <!-- WPF-проекты не подключают System.IO неявно -->
+    <Using Include="System.IO" />
+    <!-- Windows Forms нужен только ради значка в трее; его неявные using конфликтуют с именами WPF -->
+    <Using Remove="System.Windows.Forms" />
+    <Using Remove="System.Drawing" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Официальные установщики без изменений; их контрольные суммы зашиты в Setup.cs -->
+    <EmbeddedResource Include="Payload\WindowsPacketFilter-x64.msi" LogicalName="Payload.Driver.msi" />
+    <EmbeddedResource Include="Payload\ProxiFyre-x64.zip" LogicalName="Payload.ProxiFyre.zip" />
+  </ItemGroup>
+
+</Project>

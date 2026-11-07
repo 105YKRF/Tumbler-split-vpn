@@ -1,0 +1,43 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        x:Class="Tumbler.Gui.SettingsWindow"
+        Title="Настройки" Width="500" SizeToContent="Height" CanResize="False"
+        WindowStartupLocation="CenterOwner" ShowInTaskbar="False">
+    <StackPanel Margin="22,20,22,18">
+
+        <TextBlock Text="КОГДА VPN НЕДОСТУПЕН" Classes="section" Margin="0,0,0,10"/>
+        <RadioButton x:Name="BlockRadio" GroupName="Fallback" IsCheckedChanged="Fallback_Changed">
+            <StackPanel>
+                <TextBlock Text="Оставлять выбранные приложения без сети"/>
+                <TextBlock Classes="note" Margin="0,2,0,0" Text="Ничего не уйдёт мимо VPN, но приложения не работают, пока он не вернётся."/>
+            </StackPanel>
+        </RadioButton>
+        <RadioButton x:Name="DirectRadio" GroupName="Fallback" Margin="0,10,0,0" IsCheckedChanged="Fallback_Changed">
+            <StackPanel>
+                <TextBlock Text="Временно пускать напрямую"/>
+                <TextBlock Classes="note" Margin="0,2,0,0" Text="Приложения продолжают работать без VPN и сами возвращаются в него, когда порт оживёт. За этим следит служба — окно держать открытым не нужно."/>
+            </StackPanel>
+        </RadioButton>
+
+        <TextBlock Text="ОКНО" Classes="section" Margin="0,22,0,10"/>
+        <CheckBox x:Name="CloseToTrayBox" Content="Крестик сворачивает в трей, а не закрывает" IsCheckedChanged="CloseToTray_Changed"/>
+        <TextBlock Classes="note" Margin="28,2,0,0" Text="Значок в трее есть не во всех окружениях: в GNOME для него нужно расширение AppIndicator."/>
+
+        <TextBlock Text="ГОРЯЧАЯ КЛАВИША ПАУЗЫ" Classes="section" Margin="0,22,0,10"/>
+        <TextBlock Classes="note" FontSize="13" Text="Глобальные клавиши на Linux назначает само окружение рабочего стола. Добавь в его настройках клавиатуры своё сочетание с командой:"/>
+        <Grid ColumnDefinitions="*,Auto" Margin="0,8,0,0">
+            <SelectableTextBlock x:Name="ToggleCommand" FontFamily="monospace" FontSize="12.5" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            <Button Grid.Column="1" Content="Копировать" Margin="8,0,0,0" Click="CopyCommand_Click"/>
+        </Grid>
+        <TextBlock Classes="note" Margin="0,6,0,0" Text="GNOME: Настройки → Клавиатура → Комбинации клавиш → Дополнительные. KDE: Параметры системы → Комбинации клавиш → Добавить команду."/>
+
+        <TextBlock Text="О ПРОГРАММЕ" Classes="section" Margin="0,22,0,10"/>
+        <TextBlock x:Name="AboutText" Classes="note"/>
+
+        <DockPanel Margin="0,22,0,0">
+            <Button DockPanel.Dock="Right" Content="Закрыть" MinWidth="92" Click="Close_Click"/>
+            <Button x:Name="UninstallButton" Content="Удалить службу…" HorizontalAlignment="Left" Click="Uninstall_Click"
+                    ToolTip.Tip="Убрать службу «Тумблера», hev-socks5-tunnel и все правила из системы"/>
+        </DockPanel>
+    </StackPanel>
+</Window>

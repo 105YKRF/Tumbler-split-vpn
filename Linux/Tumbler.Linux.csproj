@@ -1,0 +1,39 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>WinExe</OutputType>
+    <TargetFramework>net10.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <AssemblyName>tumbler</AssemblyName>
+    <RootNamespace>Tumbler</RootNamespace>
+    <Version>1.0.0</Version>
+    <Product>Тумблер для Linux</Product>
+    <!-- Без зависимости от libicu: на минимальных системах её может не быть -->
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SatelliteResourceLanguages>en</SatelliteResourceLanguages>
+    <!-- Проект только для Linux; под Windows он собирается лишь в демо-режиме ради снимков вёрстки -->
+    <NoWarn>$(NoWarn);CA1416</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Desktop" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.3.22" />
+    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.3.22" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- Общий с Windows-версией код: настройки и профили, проверка SOCKS5, склонения -->
+    <Compile Include="..\Shared\*.cs" LinkBase="Shared" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <!-- hev-socks5-tunnel 2.18.0 (MIT) без изменений; контрольная сумма зашита в Installer.cs -->
+    <EmbeddedResource Include="Payload\hev-socks5-tunnel" LogicalName="Payload.hev" />
+    <EmbeddedResource Include="Payload\hev-socks5-tunnel.LICENSE" LogicalName="Payload.hev.LICENSE" />
+    <EmbeddedResource Include="Assets\tumbler.png" LogicalName="Assets.tumbler.png" />
+    <AvaloniaResource Include="Assets\tumbler.png" />
+  </ItemGroup>
+
+</Project>

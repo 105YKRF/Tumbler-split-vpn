@@ -1,0 +1,56 @@
+<Window x:Class="Tumbler.SetupWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Тумблер — первый запуск" Width="560" SizeToContent="Height" ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="{StaticResource Bg}" Foreground="{StaticResource Text}"
+        FontFamily="Segoe UI Variable Text, Segoe UI" FontSize="13.5" UseLayoutRounding="True">
+    <StackPanel Margin="24,22,24,18">
+        <TextBlock x:Name="Headline" Text="Нужно кое-что установить" FontSize="19" FontWeight="SemiBold"/>
+        <TextBlock x:Name="Intro" TextWrapping="Wrap" Margin="0,8,0,16" Foreground="{StaticResource Muted}"
+                   Text="«Тумблер» пускает через твой VPN только выбранные приложения, а остальные оставляет напрямую. Для этого на компьютере один раз должны появиться:"/>
+
+        <ItemsControl x:Name="Items">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Background="{StaticResource Panel}" CornerRadius="10" Padding="14,12" Margin="0,0,0,8">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="28"/>
+                                <ColumnDefinition Width="*"/>
+                                <ColumnDefinition Width="Auto"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock x:Name="Glyph" Text="&#xE896;" FontFamily="{StaticResource Icons}" FontSize="15"
+                                       Foreground="{StaticResource Muted}" Margin="0,2,0,0"/>
+                            <StackPanel Grid.Column="1">
+                                <TextBlock Text="{Binding Title}" FontWeight="SemiBold" TextWrapping="Wrap"/>
+                                <TextBlock Text="{Binding Detail}" Style="{StaticResource Note}" Margin="0,3,0,0"/>
+                            </StackPanel>
+                            <TextBlock x:Name="State" Grid.Column="2" Text="будет установлено" Foreground="{StaticResource Muted}"
+                                       FontSize="12" Margin="12,2,0,0"/>
+                        </Grid>
+                    </Border>
+                    <DataTemplate.Triggers>
+                        <DataTrigger Binding="{Binding Installed}" Value="True">
+                            <Setter TargetName="Glyph" Property="Text" Value="&#xE73E;"/>
+                            <Setter TargetName="Glyph" Property="Foreground" Value="{StaticResource Accent}"/>
+                            <Setter TargetName="State" Property="Text" Value="уже есть"/>
+                            <Setter TargetName="State" Property="Foreground" Value="{StaticResource Accent}"/>
+                        </DataTrigger>
+                    </DataTemplate.Triggers>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+        <TextBlock x:Name="Legal" Style="{StaticResource Note}" Margin="0,6,0,0"
+                   Text="Windows Packet Filter бесплатен для личного некоммерческого использования (автор — NT KERNEL). ProxiFyre распространяется по лицензии AGPL-3.0, исходный код: github.com/wiresock/proxifyre. Нажимая «Установить», ты принимаешь их условия. Всё это потом удаляется одной кнопкой в настройках «Тумблера»."/>
+
+        <TextBlock x:Name="Status" TextWrapping="Wrap" Margin="0,14,0,0" Visibility="Collapsed"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,18,0,0">
+            <Button x:Name="ExitButton" Content="Выход" IsCancel="True" MinWidth="92" Click="Exit_Click"/>
+            <Button x:Name="InstallButton" Content="Установить" Style="{StaticResource AccentButton}" MinWidth="132"
+                    Margin="8,0,0,0" Click="Install_Click"/>
+        </StackPanel>
+    </StackPanel>
+</Window>
